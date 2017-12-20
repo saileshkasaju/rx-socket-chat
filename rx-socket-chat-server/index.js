@@ -64,4 +64,19 @@ app.post("/", (req, res) => {
   res.send(`Hello ${name}!`);
 });
 
+// 404 error
+
+app.use((req, res, next) => {
+  const err = new Error("Sorry! route not found");
+  err.status = 404;
+  next(err);
+});
+
+// Internal Error handler
+
+app.use((req, res, next) => {
+  res.status(err.status || 500);
+  res.send(err.message || { err: "Internal server error" });
+});
+
 server.listen(4000, () => console.log("rx-chat server running at port 4000"));
