@@ -1,5 +1,3 @@
-import { userInfo } from "os";
-
 const express = require("express");
 const http = require("http");
 const bodyParser = require("body-parser");
@@ -26,7 +24,7 @@ const sourceConnect = Observable.create(observer => {
     });
   });
 
-  socket.on("client connect", data => {
+  io.on("client connect", data => {
     observer.next({ socket: socket, data: data, event: "client connect" });
   });
 });
