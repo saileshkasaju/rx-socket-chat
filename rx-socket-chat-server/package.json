@@ -1,0 +1,19 @@
+{
+  "name": "rx-socket-chat-server",
+  "version": "0.1.0",
+  "description": "RXjs and socket.io chat server",
+  "main": "index.js",
+  "author": "Sailesh Kasaju",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "1.18.2",
+    "express": "4.16.2",
+    "socketio": "1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.14.0"
+  },
+  "scripts": {
+    "start": "nodemon index"
+  }
+}
