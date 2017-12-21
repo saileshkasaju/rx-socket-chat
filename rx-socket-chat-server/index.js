@@ -1,19 +1,20 @@
 const express = require("express");
 const http = require("http");
+const cors = require("cors");
 const bodyParser = require("body-parser");
-const socket = require("socket.io");
+const socketio = require("socket.io");
 const Immutable = require("immutable");
 const { Observable } = require("rxjs");
 
 const app = express();
-
+app.use(cors());
 app.use(bodyParser.json());
 
 const server = http.createServer(app);
 
-const io = socket(server);
+const io = socketio(server);
 
-const userList = Immutable.Map({});
+let userList = Immutable.Map({});
 
 // socket logic on connect
 const sourceConnect = Observable.create(observer => {
@@ -22,22 +23,22 @@ const sourceConnect = Observable.create(observer => {
       socketId: socket.id,
       connectTime: Date.now()
     });
-  });
-
-  io.on("client connect", data => {
-    observer.next({ socket: socket, data: data, event: "client connect" });
+    socket.on("client connect", data => {
+      observer.next({ socket, data, event: "client connect" });
+    });
   });
 });
 
 sourceConnect.subscribe(obj => {
-  userList.set(obj.data.socketId, obj.data);
+  const { socketId } = obj.data;
+  userList = userList.set(socketId, obj.data);
   io.emit("all users", userList.toArray());
 });
 
 // socket logic for post message
 app.post("/message", (req, res) => {
   io.emit("message", req.body);
-  res.send(`message sent`);
+  res.send("message recieved");
 });
 
 // socket logic for disconnect
@@ -51,7 +52,7 @@ const sourceDisconnect = Observable.create(observer => {
 });
 
 sourceDisconnect.subscribe(obj => {
-  userList.delete(obj.socketId);
+  userList = userList.delete(obj.socketId);
   io.emit("all users", userList.toArray());
 });
 
